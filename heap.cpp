@@ -1,7 +1,9 @@
 #include "heap.h"
 
+/////////////////////////////////////////////////////////////////////
+/// Initialization Functions
+
 heap::heap() {
-    lastEntered = -1;
     tree.push_back(node());
 }
 heap::~heap() {
@@ -18,6 +20,9 @@ heap &heap::operator=(const heap &other) {
     return *this;
 }
 
+/////////////////////////////////////////////////////////////////////
+/// General Functions
+
 bool heap::empty() const {
     return tree.size() <= 1;
 }
@@ -30,6 +35,7 @@ const std::string heap::peek() const {
     return tree[1].word;
 }
 
+/* Generates a node based off parameters, then inserts into heap and heapifies up */
 void heap::insert(const std::string &w, const size_t &pIdx, const size_t &lIdx, const size_t &count) {
 
     // Puts node at end of heap vector
@@ -39,12 +45,30 @@ void heap::insert(const std::string &w, const size_t &pIdx, const size_t &lIdx, 
     if(tree.size() != 2)
         heapify();
 
-    /////// ******** DEBUG OUTPUT  use https://www.cs.usfca.edu/~galles/visualization/Heap.html
-    for(int i = 0; i < tree.size(); ++i) {
-        std::cout << "(" << tree[i].word << ")";
-    }
-    std::cout << std::endl;
 }
+
+/* Removes and returns minimum node and heapifies down */
+node heap::pop() {
+
+    if(empty()) throw EMPTY_HEAP;
+
+    node temp = tree[1];
+    if(tree.size() != 2)
+        tree[1] = tree[tree.size() - 1];
+    tree.pop_back();
+
+
+    /////// ******** DEBUG OUTPUT  use https://www.cs.usfca.edu/~galles/visualization/Heap.html
+//    for(int i = 0; i < tree.size(); ++i) {
+//        std::cout << "(" << tree[i].word << ")";
+//    }
+//    std::cout << std::endl;
+
+    return temp;
+}
+
+/////////////////////////////////////////////////////////////////////
+/// Private Functions
 
 void heap::clear() {
     deleteAll();
@@ -52,11 +76,9 @@ void heap::clear() {
 
 void heap::copy(const heap &other) {
     tree = other.tree;
-    lastEntered = other.lastEntered;
 }
 void heap::deleteAll() {
     tree.clear();
-    lastEntered = -1;
 }
 
 /* Simple function to swap two node values on the heap */
@@ -68,17 +90,40 @@ void heap::swap(const size_t &x, const size_t &y) {
 
 /* Starting from the last inserted node, swaps the smaller value up the tree */
 void heap::heapify() {
-    lastEntered = tree.size();
-    size_t idx = lastEntered - 1;
+    size_t idx = tree.size() - 1;
     size_t parent;
+
+    // Swaps value with parent if smaller up tree until not possible
     do {
         parent = idx / 2;
-        std::cout << "PARENT VALUE: " << parent << std::endl;
-        std::cout << "idx value: " << idx << std::endl;
-        if(tree[idx] < tree[parent]) {
-            std::cout << "smaller" << std::endl;
+        if(tree[idx] < tree[parent])
             swap(idx, parent);
-        }
         idx = parent;
     } while(parent != 1);
+}
+
+/* Compares root value with children and moves node downwards */
+void heap::heapifyDown() {
+    size_t idx = 1;
+    size_t leftIdx = idx * 2;
+    size_t rightIdx;
+    size_t nextNodeIndex;
+
+    // Starts from root and swaps with the smaller of the children while possible
+    while(leftIdx < tree.size()) {
+
+        rightIdx = leftIdx + 1;
+
+        // Gets index of next comparison, and the smaller of the children if both exist
+        nextNodeIndex = (rightIdx < tree.size()) ? getSmaller(leftIdx, rightIdx) : leftIdx;
+        if(tree[idx] > tree[nextNodeIndex])
+            swap(idx, nextNodeIndex);
+        idx = nextNodeIndex;
+        leftIdx = idx * 2;
+    }
+}
+
+/* Simple helper to get the index of the smaller of two nodes */
+size_t heap::getSmaller(const size_t &x, const size_t &y) {
+    return (tree[x] < tree[y]) ? x : y;
 }
