@@ -44,7 +44,11 @@ void heap::insert(const std::string &w, const size_t &pIdx, const size_t &lIdx, 
     // Ignores heapify process it first insert
     if(tree.size() != 2)
         heapify();
-
+    /////// ******** DEBUG OUTPUT  use https://www.cs.usfca.edu/~galles/visualization/Heap.html
+//    for(int i = 0; i < tree.size(); ++i) {
+//        std::cout << "(" << tree[i].word << ")";
+//    }
+//    std::cout << std::endl;
 }
 
 /* Removes and returns minimum node and heapifies down */
@@ -57,6 +61,7 @@ node heap::pop() {
         tree[1] = tree[tree.size() - 1];
     tree.pop_back();
 
+    heapifyDown();
 
     /////// ******** DEBUG OUTPUT  use https://www.cs.usfca.edu/~galles/visualization/Heap.html
 //    for(int i = 0; i < tree.size(); ++i) {
