@@ -30,6 +30,7 @@ private:
     void copy(const heap &other);
     void deleteAll();
     void swap(const size_t &x, const size_t &y);
+    void heapify();
 
 };
 

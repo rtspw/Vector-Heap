@@ -19,7 +19,7 @@ heap &heap::operator=(const heap &other) {
 }
 
 bool heap::empty() const {
-    return !tree.size() - 1;
+    return tree.size() <= 1;
 }
 
 size_t heap::size() const {
@@ -31,23 +31,19 @@ const std::string heap::peek() const {
 }
 
 void heap::insert(const std::string &w, const size_t &pIdx, const size_t &lIdx, const size_t &count) {
-    std::cout << "INSERTING " << w << std::endl;
-    node temp(w, pIdx, lIdx, count);
-    tree.push_back(temp);
-    if(tree.size() != 2) {
-        lastEntered = tree.size();
-        size_t idx = lastEntered;
-        size_t parent;
-        do {
-            parent = idx / 2;
-            std::cout << "PARENT VALUE: " << parent << std::endl;
-            if(tree[idx] < tree[parent]) {
-                std::cout << "asdf" << std::endl;
-                swap(idx, parent);
-            }
-            idx = parent;
-        } while(parent != 1);
+
+    // Puts node at end of heap vector
+    tree.push_back(node(w, pIdx, lIdx, count));
+
+    // Ignores heapify process it first insert
+    if(tree.size() != 2)
+        heapify();
+
+    /////// ******** DEBUG OUTPUT  use https://www.cs.usfca.edu/~galles/visualization/Heap.html
+    for(int i = 0; i < tree.size(); ++i) {
+        std::cout << "(" << tree[i].word << ")";
     }
+    std::cout << std::endl;
 }
 
 void heap::clear() {
@@ -63,8 +59,26 @@ void heap::deleteAll() {
     lastEntered = -1;
 }
 
+/* Simple function to swap two node values on the heap */
 void heap::swap(const size_t &x, const size_t &y) {
     node temp = tree[x];
     tree[x] = tree[y];
     tree[y] = temp;
+}
+
+/* Starting from the last inserted node, swaps the smaller value up the tree */
+void heap::heapify() {
+    lastEntered = tree.size();
+    size_t idx = lastEntered - 1;
+    size_t parent;
+    do {
+        parent = idx / 2;
+        std::cout << "PARENT VALUE: " << parent << std::endl;
+        std::cout << "idx value: " << idx << std::endl;
+        if(tree[idx] < tree[parent]) {
+            std::cout << "smaller" << std::endl;
+            swap(idx, parent);
+        }
+        idx = parent;
+    } while(parent != 1);
 }
